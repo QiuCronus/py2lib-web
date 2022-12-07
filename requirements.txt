@@ -1,0 +1,6 @@
+celery==4.4.0
+Django==3.2.16
+django-celery-results==2.0.1
+eventlet==0.33.2
+importlib-metadata==0.20
+SQLAlchemy==1.4.44

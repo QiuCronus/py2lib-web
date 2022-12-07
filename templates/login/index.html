@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}主页{% endblock %}
+{% block content %}
+    {% if request.session.is_login %}
+        <h1>你好,{{ request.session.user_name }}！欢迎回来！</h1>
+
+        <hr>
+
+        {% if message %}
+            <div class="alert alert-warning">{{ message }}</div>
+        {% endif %}
+        <h1>创建打包任务</h1>
+        <form action="/upload/" enctype="multipart/form-data" method="POST">
+            {% csrf_token %}
+            <input type="file" name="file", accept=".zip">
+            <input type="submit" value="upload">
+        </form>
+
+        <hr>
+
+        <table id="tlb_tasks" border="1px">
+            <tr align="center">
+                <td>&nbsp;&nbsp;id&nbsp;&nbsp;</td>
+                <td>&nbsp;&nbsp;任务ID&nbsp;&nbsp;</td>
+                <td>&nbsp;&nbsp;文件名&nbsp;&nbsp;</td>
+                <td>&nbsp;&nbsp;状态&nbsp;&nbsp;</td>
+                <td>&nbsp;&nbsp;Whl文件&nbsp;&nbsp;</td>
+                <td>&nbsp;&nbsp;创建时间&nbsp;&nbsp;</td>
+                <td>&nbsp;&nbsp;更新时间&nbsp;&nbsp;</td>
+            </tr>
+            {% if all_tasks %}
+                {% for task in all_tasks %}
+                    <tr align="center">
+                        <td>&nbsp;&nbsp;{{ task.id }}&nbsp;&nbsp;</td>
+                        <td>&nbsp;&nbsp;{{ task.task_id }}&nbsp;&nbsp;</td>
+                        <td>&nbsp;&nbsp;{{ task.filename }}&nbsp;&nbsp;</td>
+                        <td>
+                            {% if task.status == 0 %}
+                                &nbsp;&nbsp;待编译&nbsp;&nbsp;
+                            {% elif task.status == 1 %}
+                                &nbsp;&nbsp;编译中&nbsp;&nbsp;
+                            {% elif task.status == 2 %}
+                                &nbsp;&nbsp;打包中&nbsp;&nbsp;
+                            {% elif task.status == 3 %}
+                                &nbsp;&nbsp;失败&nbsp;&nbsp;
+                            {% elif task.status == 4 %}
+                                &nbsp;&nbsp;完成&nbsp;&nbsp;
+                            {% else %}
+                                &nbsp;&nbsp;未知&nbsp;&nbsp;
+                            {% endif %}
+                        </td>
+                        <td>&nbsp;&nbsp;{{ task.whl }}&nbsp;&nbsp;</td>
+                        <td>&nbsp;&nbsp;{{ task.created_at }}&nbsp;&nbsp;</td>
+                        <td>&nbsp;&nbsp;{{ task.modified_at }}&nbsp;&nbsp;</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+    {% else %}
+        <h1>你尚未登录，只能访问公开内容！</h1>
+    {% endif %}
+{% endblock %}
