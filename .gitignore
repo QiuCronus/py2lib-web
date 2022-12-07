@@ -128,3 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 /.idea/
+/data/
+/db.sqlite3
+/celery.db
