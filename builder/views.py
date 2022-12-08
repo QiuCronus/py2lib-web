@@ -2,6 +2,7 @@ import os
 import uuid
 
 from django.shortcuts import render, redirect
+from django.http import FileResponse, Http404
 from django.conf import settings
 
 from .tasks import compile_py_to_lib, build_py_to_wheel, verfiy_upload_files
@@ -47,6 +48,16 @@ def upload_file(request):
         verfiy_upload_files.apply_async((task_id,), link=[compile_py_to_lib.s(), build_py_to_wheel.s()])
     return redirect("/index", locals())
 
+
+def download_file(request, task_id):
+    task = TaskRecord.objects.get(task_id=task_id)
+    dirpath = os.path.join(settings.DIR_TEMP, task_id, "dist")
+    wheel = os.path.join(dirpath, task.whl)
+    if os.path.exists(wheel):
+        return FileResponse(open(wheel, "rb"), as_attachment=True, filename=task.whl)
+    else:
+        message = "文件不存在"
+        return redirect("/index", locals())
 
 def check_login_user(request, login_form):
     if login_form.is_valid():

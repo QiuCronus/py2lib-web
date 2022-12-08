@@ -12,7 +12,7 @@
         <h1>创建打包任务</h1>
         <form action="/upload/" enctype="multipart/form-data" method="POST">
             {% csrf_token %}
-            <input type="file" name="file", accept=".zip">
+            <input type="file" name="file" , accept=".zip">
             <input type="submit" value="upload">
         </form>
 
@@ -24,7 +24,7 @@
                 <td>&nbsp;&nbsp;任务ID&nbsp;&nbsp;</td>
                 <td>&nbsp;&nbsp;文件名&nbsp;&nbsp;</td>
                 <td>&nbsp;&nbsp;状态&nbsp;&nbsp;</td>
-                <td>&nbsp;&nbsp;Whl文件&nbsp;&nbsp;</td>
+                <td>&nbsp;&nbsp;结果&nbsp;&nbsp;</td>
                 <td>&nbsp;&nbsp;创建时间&nbsp;&nbsp;</td>
                 <td>&nbsp;&nbsp;更新时间&nbsp;&nbsp;</td>
             </tr>
@@ -36,20 +36,36 @@
                         <td>&nbsp;&nbsp;{{ task.filename }}&nbsp;&nbsp;</td>
                         <td>
                             {% if task.status == 0 %}
-                                &nbsp;&nbsp;待编译&nbsp;&nbsp;
+                                &nbsp;&nbsp;待处理&nbsp;&nbsp;
                             {% elif task.status == 1 %}
-                                &nbsp;&nbsp;编译中&nbsp;&nbsp;
+                                &nbsp;&nbsp;校验中&nbsp;&nbsp;
                             {% elif task.status == 2 %}
-                                &nbsp;&nbsp;打包中&nbsp;&nbsp;
+                                &nbsp;&nbsp;校验成功&nbsp;&nbsp;
                             {% elif task.status == 3 %}
-                                &nbsp;&nbsp;失败&nbsp;&nbsp;
+                                &nbsp;&nbsp;编译中&nbsp;&nbsp;
                             {% elif task.status == 4 %}
-                                &nbsp;&nbsp;完成&nbsp;&nbsp;
+                                &nbsp;编译完成&nbsp;&nbsp;
+                            {% elif task.status == 5 %}
+                                打包中
+                            {% elif task.status == 6 %}
+                                打包完成
+                            {% elif task.status == 7 %}
+                                校验失败
+                            {% elif task.status == 8 %}
+                                编译失败
+                            {% elif task.status == 9 %}
+                                打包失败
                             {% else %}
                                 &nbsp;&nbsp;未知&nbsp;&nbsp;
                             {% endif %}
                         </td>
-                        <td>&nbsp;&nbsp;{{ task.whl }}&nbsp;&nbsp;</td>
+                        <td>&nbsp;&nbsp;
+                            {% if task.status == 6 %}
+                                <a href="/download/{{ task.task_id }}" download>{{ task.whl }}</a>
+                            {% else %}
+                                {{ task.err_msg }}
+                            {% endif %}
+                        </td>
                         <td>&nbsp;&nbsp;{{ task.created_at }}&nbsp;&nbsp;</td>
                         <td>&nbsp;&nbsp;{{ task.modified_at }}&nbsp;&nbsp;</td>
                     </tr>

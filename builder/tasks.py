@@ -4,7 +4,7 @@ import zipfile
 from django.conf import settings
 
 from py2lib import celery_app
-from .compile import convert_py_to_lib
+from .compile import start_compile_all_folder
 from .models import TaskRecord
 from .wheel import bdist_wheel
 
@@ -48,16 +48,18 @@ def compile_py_to_lib(task_id):
 
     workspace = os.path.join(settings.DIR_TEMP, task.task_id)
     try:
-        r, err_or_none = convert_py_to_lib(workspace)
+        r, err_or_none = start_compile_all_folder(workspace)
+        if r:
+            task.status = TaskRecord.COMPILED
+        else:
+            task.status = TaskRecord.ERR_COMPILING
+            task.err_msg = str(err_or_none)
     except Exception as err:
-        print(err)
-
-    if r:
-        task.status = TaskRecord.COMPILED
-    else:
         task.status = TaskRecord.ERR_COMPILING
-        task.err_msg = str(err_or_none)
-    task.save()
+        task.err_msg = str(err)
+    finally:
+        task.save()
+
     return task_id
 
 
@@ -68,20 +70,24 @@ def build_py_to_wheel(task_id):
 
     task = TaskRecord.objects.get(task_id=task_id)
     if task.status != TaskRecord.COMPILED:
-        # raise RuntimeError("task should be COMPILED before packing.")
         return
 
     task.status = TaskRecord.WHEELING
     task.save()
 
     workspace = os.path.join(settings.DIR_TEMP, task.task_id)
-    r, err_or_none = bdist_wheel(workspace)
-
-    if r:
-        task.status = TaskRecord.SUCCESS
-    else:
+    try:
+        r, err_or_path = bdist_wheel(workspace)
+        if r:
+            task.status = TaskRecord.SUCCESS
+            task.whl = err_or_path
+        else:
+            task.status = TaskRecord.ERR_WHEELING
+            task.err_msg = str(err_or_path)
+    except Exception as err:
         task.status = TaskRecord.ERR_WHEELING
-        task.err_msg = str(err_or_none)
-    task.save()
+        task.err_msg = str(err)
+    finally:
+        task.save()
 
     return task_id

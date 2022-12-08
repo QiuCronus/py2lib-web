@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_celery_results",
     "builder",
 ]
 
@@ -145,7 +144,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 CELERY_BROKER_URL = (f"sqla+sqlite:///{os.getcwd()}/celery.db",)
-CELERY_RESULT_BACKEND = "django-db"
-CELERY_RESULT_EXPIRES = 0
+CELERY_RESULT_EXPIRES = 60
 CELERY_WORKER_CONCURRENCY = 2
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 200
+CELERY_IGNORE_RESULT = True
