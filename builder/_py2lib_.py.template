@@ -18,4 +18,3 @@ setup(
     cmdclass={'build_ext': build_ext},
     ext_modules = cythonize(extentions, nthreads=1, build_dir="tmp_build", compiler_directives={"language_level": '3'})
 )
-#setup(ext_modules=cythonize(extentions, nthreads=1, build_dir="tmp_build", compiler_directives={"language_level": '3'})

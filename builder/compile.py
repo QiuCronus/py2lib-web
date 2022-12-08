@@ -6,7 +6,7 @@ import subprocess
 from configparser import ConfigParser
 from dataclasses import dataclass, field
 
-from .utils import shell
+from builder.utils import shell
 
 # base on https://github.com/cckuailong/py2sec
 
@@ -79,7 +79,7 @@ def get_all_compile_files(opts: Options):
     should_compile_files = []
     for pyfile in tmp_pyfiles:
         should_compile_files.append(pyfile)
-    return should_compile_files
+    return sorted(should_compile_files)
 
 
 def load_exclude_options(opts: Options):
@@ -119,8 +119,8 @@ def create_setup_script(opts, pyfiles):
 
 
 def execute_setup_script(opts: Options):
-    # os.chdir(opts.dir_root)
-    cmd = "%s _py2lib.py build_ext --inplace" % sys.executable
+    os.chdir(opts.dir_root)
+    cmd = "%s _py2lib_.py build_ext --inplace" % sys.executable
     exit_code, stdout, stderr = shell(cmd, cwd=opts.dir_root)
     # proc = subprocess.Popen(
     #     "%s _py2lib.py build_ext --inplace" % sys.executable,
@@ -137,6 +137,7 @@ def execute_setup_script(opts: Options):
     for line in stderr:
         line = line.replace("\r", "").replace("\n", "").strip()
         print(f"[*] \t{line}")
+    return exit_code
 
 
 def keep_pre_exist_lib(opts: Options):
@@ -179,6 +180,8 @@ def compile_projects(dirpath: str):
     # 获取需要编译的目录
     should_compile_files = get_all_compile_files(opts)
 
+    success = True
+
     if not isWindows:
         create_setup_script(opts, should_compile_files)
         execute_setup_script(opts)
@@ -206,11 +209,13 @@ def compile_projects(dirpath: str):
     shutil.rmtree(os.path.join(opts.dir_root, "tmp_build"))
     cleanup(opts, ext_names=[".py", ".pyc"])
 
+    return success
+
 
 def start_compile_all_folder(dirpath):
     # type: (str) -> (bool, None | Exception)
     try:
-        compile_projects(dirpath)
+        r = compile_projects(dirpath)
         return True, None
     except Exception as err:
         return False, err

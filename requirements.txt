@@ -1,5 +1,5 @@
 celery==5.2.3
 Cython==0.29.32
 Django==3.2.16
-importlib-metadata==5.1.0
 SQLAlchemy==1.4.44
+importlib-metadata==4.12.0
