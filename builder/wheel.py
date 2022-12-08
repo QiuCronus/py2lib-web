@@ -1,6 +1,7 @@
 import os
-import shutil
-import subprocess
+import sys
+
+from .utils import shell
 
 
 def rmdirs(dirpath):
@@ -22,16 +23,14 @@ def bdist_wheel(dirpath):
             os.makedirs(dir_whl)
         rmdirs(dir_whl)
 
-        proc = subprocess.Popen("python setup.py -q bdist_wheel",
-                                shell=True, text=True, cwd=dirpath, env=os.environ.copy(),
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        proc.wait()
+        cmd = sys.executable + " setup.py -q bdist_wheel"
+        exit_code, stdout, stderr = shell(cmd, cwd=dirpath)
         print("[+] command: python setup.py -q bdist_wheel")
-        print("[+} exit_code: %s" % proc.returncode)
-        for line in proc.stdout.readlines():
+        print("[+} exit_code: %s" % exit_code)
+        for line in stdout:
             line = line.replace("\r", "").replace("\n", "").strip()
             print("[+] %s" % line)
-        for line in proc.stderr.readlines():
+        for line in stderr:
             line = line.replace("\r", "").replace("\n", "").strip()
             print("[*] %s" % line)
         whlfiles = os.listdir(dir_whl) or []
@@ -44,5 +43,5 @@ def bdist_wheel(dirpath):
         return False, err
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     bdist_wheel(r"X:\Coding\src\cronusqiu\trunk\tools\py2lib-web\data\temps\44f404dcc12349c3b4239e7363bd9ad1")

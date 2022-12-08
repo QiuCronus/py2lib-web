@@ -6,8 +6,7 @@ import subprocess
 from configparser import ConfigParser
 from dataclasses import dataclass, field
 
-from distutils.core import setup, Extension
-from Cython.Build import cythonize
+from .utils import shell
 
 # base on https://github.com/cckuailong/py2sec
 
@@ -121,19 +120,21 @@ def create_setup_script(opts, pyfiles):
 
 def execute_setup_script(opts: Options):
     # os.chdir(opts.dir_root)
-    proc = subprocess.Popen(
-        "python _py2lib_.py build_ext --inplace",
-        shell=True,
-        cwd=opts.dir_root,
-        text=True,
-        stderr=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-    )
-    proc.wait()
-    for line in proc.stdout.readlines():
+    cmd = "%s _py2lib.py build_ext --inplace" % sys.executable
+    exit_code, stdout, stderr = shell(cmd, cwd=opts.dir_root)
+    # proc = subprocess.Popen(
+    #     "%s _py2lib.py build_ext --inplace" % sys.executable,
+    #     shell=True,
+    #     cwd=opts.dir_root,
+    #     text=True,
+    #     stderr=subprocess.PIPE,
+    #     stdout=subprocess.PIPE,
+    # )
+    # proc.wait()
+    for line in stdout:
         line = line.replace("\r", "").replace("\n", "").strip()
         print(f"[+] \t{line}")
-    for line in proc.stderr.readlines():
+    for line in stderr:
         line = line.replace("\r", "").replace("\n", "").strip()
         print(f"[*] \t{line}")
 

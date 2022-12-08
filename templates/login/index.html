@@ -9,7 +9,7 @@
         {% if message %}
             <div class="alert alert-warning">{{ message }}</div>
         {% endif %}
-        <h1>创建打包任务</h1>
+        <h1>创建任务 (只支持 {{ os_name }} 系统)</h1>
         <form action="/upload/" enctype="multipart/form-data" method="POST">
             {% csrf_token %}
             <input type="file" name="file" , accept=".zip">
@@ -73,6 +73,6 @@
             {% endif %}
         </table>
     {% else %}
-        <h1>你尚未登录，只能访问公开内容！</h1>
+        <h1>尚未登录</h1>
     {% endif %}
 {% endblock %}

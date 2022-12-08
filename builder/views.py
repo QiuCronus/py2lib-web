@@ -1,5 +1,6 @@
 import os
 import uuid
+import platform
 
 from django.shortcuts import render, redirect
 from django.http import FileResponse, Http404
@@ -12,6 +13,7 @@ from .models import Account, TaskRecord
 
 def index(request):
     # 主页
+    os_name = platform.system()
     all_tasks = []
     if request.session.get("is_login", None):
         # 已经登录的，显示对应的任务列表
@@ -58,6 +60,7 @@ def download_file(request, task_id):
     else:
         message = "文件不存在"
         return redirect("/index", locals())
+
 
 def check_login_user(request, login_form):
     if login_form.is_valid():

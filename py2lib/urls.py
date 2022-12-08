@@ -26,5 +26,5 @@ urlpatterns = [
     url(r"^login/", builder_views.login),
     url(r"^logout/", builder_views.logout),
     url(r"^upload/", builder_views.upload_file),
-    url(r'^download/(?P<task_id>.*)$', builder_views.download_file),
+    url(r"^download/(?P<task_id>.*)$", builder_views.download_file),
 ]
