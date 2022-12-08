@@ -20,9 +20,10 @@ from django.conf.urls import url
 from builder import views as builder_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    url(r'^index/', builder_views.index),
-    url(r'^login/', builder_views.login),
-    url(r'^logout/', builder_views.logout),
+    path("admin/", admin.site.urls),
+    url(r"^index/", builder_views.index),
+    url(r"^$", builder_views.index),
+    url(r"^login/", builder_views.login),
+    url(r"^logout/", builder_views.logout),
     url(r"^upload/", builder_views.upload_file),
 ]

@@ -37,9 +37,12 @@ def upload_file(request):
                 fd.write(chunk)
 
         TaskRecord.objects.create(
-            task_id=task_id, filename=upload_file_stream.name,
-            local_path=filepath, status=TaskRecord.PENDING,
-            whl="", user=login_user
+            task_id=task_id,
+            filename=upload_file_stream.name,
+            local_path=filepath,
+            status=TaskRecord.PENDING,
+            whl="",
+            user=login_user,
         )
         verfiy_upload_files.apply_async((task_id,), link=[compile_py_to_lib.s(), build_py_to_wheel.s()])
     return redirect("/index", locals())

@@ -3,8 +3,6 @@ from django.db import models
 # Create your models here.
 
 
-
-
 class Account(models.Model):
     username = models.CharField(max_length=128, unique=True)
     password = models.CharField(max_length=256)
@@ -33,16 +31,12 @@ class TaskRecord(models.Model):
 
     TASK_STATUS_CHOICES = (
         (PENDING, "待处理"),
-
         (CHECKING, "校验中"),
         (COMPILING, "编译中"),
         (WHEELING, "打包中"),
-
         (SUCCESS, "完成"),
-
         (CHECKED, "校验完成"),
         (COMPILED, "编译完成"),
-
         (ERR_CHECKING, "校验失败"),
         (ERR_COMPILING, "编译失败"),
         (ERR_WHEELING, "打包失败"),
@@ -52,7 +46,7 @@ class TaskRecord(models.Model):
     task_id = models.CharField(max_length=64, unique=True)
     filename = models.CharField(max_length=256)
     local_path = models.TextField("localpath", null=True)
-    status = models.IntegerField(max_length=2, choices=TASK_STATUS_CHOICES, default=PENDING)
+    status = models.IntegerField(choices=TASK_STATUS_CHOICES, default=PENDING)
     # status = models.IntegerField("状态", default=0)
     whl = models.TextField("whl", null=True, blank=True)
     created_at = models.DateTimeField("created_at", auto_now_add=True)
